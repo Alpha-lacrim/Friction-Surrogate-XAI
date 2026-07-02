@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, and an automated research-grade EDA module. It intentionally does not implement preprocessing algorithms, model training, hyperparameter optimization, SHAP/LIME analysis, or uncertainty quantification yet.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, and leakage-safe preprocessing pipeline builders. It intentionally does not implement model training, hyperparameter optimization, SHAP/LIME analysis, or uncertainty quantification yet.
 
 ## Research Scope
 
@@ -110,6 +110,30 @@ Generated outputs include:
 
 Outliers are never removed by the EDA module. They are detected and reported only.
 
+## Preprocessing
+
+Generate unfitted preprocessing pipeline artifacts for every configured dataset:
+
+```bash
+python -m friction_surrogate_xai.preprocessing
+```
+
+The preprocessing system is configured by `configs/preprocessing.yaml` and builds sklearn `Pipeline` objects with:
+
+- feature validation
+- constant-feature removal
+- `StandardScaler`, `MinMaxScaler`, `RobustScaler`, or no scaling
+- optional `OneHotEncoder`
+
+Leakage policy:
+
+- saved preprocessing pipelines are intentionally unfitted
+- constant-feature removal learns constants only during `Pipeline.fit`
+- scalers are inside the sklearn pipeline and must be fit inside CV folds
+- never fit preprocessing on the full dataset before validation
+
+Generated artifacts are written under `reports/preprocessing_artifacts/` and logged to MLflow experiment `friction-surrogate-xai-preprocessing`.
+
 ## Environment
 
 Recommended setup:
@@ -131,8 +155,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, and EDA module. Tests that need raw Excel/PDF files are skipped when local raw files are absent. They do not train models.
+These checks validate the skeleton, configs, importability, data layer, EDA module, and preprocessing pipelines. Tests that need raw Excel/PDF files are skipped when local raw files are absent. They do not train models.
 
 ## Future Work
 
-The next implementation phase should add model/pipeline factories with MLflow tracking. Keep all scaling, feature selection, discretization fitting, and imputation inside fold-safe sklearn pipelines.
+The next implementation phase should add model/pipeline factories with MLflow tracking. Keep model validation wired so the saved preprocessing pipeline is cloned and fit inside each CV fold.

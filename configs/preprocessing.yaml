@@ -1,0 +1,68 @@
+preprocessing:
+  output:
+    root_dir: reports/preprocessing_artifacts
+
+  feature_validation:
+    enabled: true
+    require_dataframe: true
+    allow_extra_columns: false
+    strict_numeric_dtype: true
+
+  features:
+    include_id_column: false
+    categorical_features:
+      - "Tool Shape"
+    numeric_features:
+      - "Rotational Speed"
+      - "Plunging Speed"
+      - "Composite Volume Fraction (%)"
+
+  constant_feature_removal:
+    enabled: true
+    dropna: false
+    tolerance: 0.0
+    protected_features: []
+
+  scaling:
+    default: standard
+    supported:
+      - standard
+      - minmax
+      - robust
+      - none
+    standard:
+      with_mean: true
+      with_std: true
+    minmax:
+      feature_range:
+        - 0
+        - 1
+    robust:
+      with_centering: true
+      with_scaling: true
+      quantile_range:
+        - 25.0
+        - 75.0
+
+  encoding:
+    one_hot:
+      enabled: true
+      handle_unknown: ignore
+      sparse_output: false
+      drop: null
+
+  artifacts:
+    save_unfitted_pipeline: true
+    save_config_snapshot: true
+    save_feature_schema: true
+    save_validation_report: true
+    save_leakage_policy: true
+
+  mlflow:
+    enabled: true
+    experiment_name: friction-surrogate-xai-preprocessing
+    artifact_path_prefix: preprocessing
+    tags:
+      stage: preprocessing
+      leakage_policy: fit_inside_cv_folds_only
+

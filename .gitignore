@@ -41,6 +41,9 @@ reports/mlflow_screenshots/*
 reports/eda/**
 !reports/eda/
 !reports/eda/README.md
+reports/preprocessing_artifacts/**
+!reports/preprocessing_artifacts/
+!reports/preprocessing_artifacts/README.md
 
 # Generated model files
 models/artifacts/
