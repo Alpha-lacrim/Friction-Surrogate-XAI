@@ -1,0 +1,34 @@
+randomness:
+  default_seed: 42
+  repeated_seeds:
+    - 7
+    - 21
+    - 42
+    - 84
+    - 168
+
+cross_validation:
+  primary_strategy: repeated_kfold
+  n_splits: 5
+  n_repeats: 1
+  shuffle: true
+  fallback_strategy_for_tiny_targets: leave_one_out
+  nested_cv_required_for_final_comparison: true
+
+metrics:
+  regression:
+    - r2
+    - rmse
+    - nrmse
+    - mae
+  reliability:
+    - train_test_gap
+    - fold_metric_std
+    - prediction_interval_width
+
+hyperparameter_search:
+  first_stage: random_search
+  second_stage: optuna
+  top_n_for_second_stage: 3
+  grid_search_allowed: false
+

@@ -1,0 +1,47 @@
+pipelines:
+  original_single_output:
+    id: pipeline_1
+    dataset_family: original
+    output_mode: single_output
+    models_scope: all_models
+    mlflow_required: true
+
+  original_multi_output:
+    id: pipeline_2
+    dataset_family: original
+    output_mode: multi_output
+    models_scope: all_models
+    mlflow_required: true
+
+  discrete_single_output:
+    id: pipeline_3
+    dataset_family: discrete_inputs
+    output_mode: single_output
+    models_scope: top_3_from_original
+    mlflow_required: true
+
+  discrete_multi_output:
+    id: pipeline_4
+    dataset_family: discrete_inputs
+    output_mode: multi_output
+    models_scope: top_3_from_original
+    mlflow_required: true
+
+future_model_registry:
+  baseline:
+    - linear_regression
+  regularized_linear:
+    - ridge
+    - elasticnet
+  kernel:
+    - svr_rbf
+    - gaussian_process_regression
+  tree_ensembles:
+    - random_forest
+    - extra_trees
+    - gradient_boosting
+    - xgboost
+    - lightgbm
+  neural_network:
+    - shallow_mlp_regressor
+

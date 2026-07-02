@@ -1,0 +1,67 @@
+eda:
+  output:
+    root_dir: reports/eda
+    plots_dir_name: plots
+    tables_dir_name: tables
+    markdown_dir_name: markdown
+
+  columns:
+    include_id_column: false
+    include_features: true
+    include_targets: true
+
+  statistics:
+    confidence_level: 0.95
+    normality_alpha: 0.05
+    correlation_methods:
+      - pearson
+      - spearman
+      - kendall
+
+  plots:
+    enabled: true
+    dpi: 300
+    style: whitegrid
+    context: paper
+    palette: deep
+    histogram_bins: auto
+    qq_distribution: norm
+    pairplot_corner: true
+    pairplot_diag_kind: kde
+    figure_format: png
+    histogram_figsize:
+      - 7
+      - 4.5
+    kde_figsize:
+      - 7
+      - 4.5
+    qq_figsize:
+      - 6
+      - 6
+    boxplot_figsize:
+      - 6
+      - 4.5
+    heatmap_figsize:
+      - 10
+      - 8
+    pairplot_height: 2.2
+
+  outliers:
+    iqr_multiplier: 1.5
+    isolation_forest:
+      enabled: true
+      contamination: auto
+      random_state: 42
+    local_outlier_factor:
+      enabled: true
+      contamination: auto
+      n_neighbors: 20
+
+  mlflow:
+    enabled: true
+    experiment_name: friction-surrogate-xai-eda
+    artifact_path_prefix: eda
+    tags:
+      stage: eda
+      outlier_policy: detect_only_never_remove
+

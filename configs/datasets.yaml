@@ -1,0 +1,110 @@
+schema:
+  id_column: "No."
+  feature_columns:
+    - "Tool Shape"
+    - "Rotational Speed"
+    - "Plunging Speed"
+    - "Composite Volume Fraction (%)"
+  common_target_columns:
+    - "Si Particle Size (um)"
+    - "Hardness (HV)"
+    - "wear rate"
+    - "Ultimate Compression Strength (MPa)"
+    - "Elongation (%)"
+  special_target_columns:
+    dataset_0136:
+      - "Temperature (°C)"
+      - "Strain"
+  column_types:
+    "No.": integer
+    "Tool Shape": integer
+    "Rotational Speed": integer
+    "Plunging Speed": numeric
+    "Composite Volume Fraction (%)": integer
+    "Si Particle Size (um)": numeric
+    "Hardness (HV)": numeric
+    "wear rate": numeric
+    "Ultimate Compression Strength (MPa)": numeric
+    "Elongation (%)": numeric
+    "Temperature (°C)": numeric
+    "Strain": numeric
+  value_constraints:
+    "Composite Volume Fraction (%)":
+      allowed_values:
+        - 0
+        - 1
+
+loading:
+  reader: excel
+  engine: openpyxl
+  validate_on_load: true
+  strict_validation: true
+
+validation:
+  require_exact_columns: true
+  require_configured_shape: true
+  duplicate_detection:
+    check_full_rows: true
+    check_id_column: true
+  constant_detection:
+    include_all_columns: true
+    include_feature_columns: true
+    dropna: false
+  missing_values:
+    report_ratios: true
+  descriptive_statistics:
+    include_numeric: true
+    include_non_numeric: true
+    percentiles:
+      - 0.25
+      - 0.5
+      - 0.75
+
+datasets:
+  dataset_0136:
+    filename: "Dataset 0136.xlsx"
+    sheet_name: "Extracted Data"
+    raw_path: "data/raw/Dataset 0136.xlsx"
+    rows: 36
+    columns: 12
+    has_missing_values: false
+    constant_features:
+      - "Composite Volume Fraction (%)"
+    targets:
+      common: true
+      special:
+        - "Temperature (°C)"
+        - "Strain"
+    notes:
+      - "Composite Volume Fraction (%) is constant at 0 in this dataset."
+      - "Temperature and Strain are available only for dedicated Dataset 0136 analysis."
+
+  dataset_0172:
+    filename: "Dataset 0172.xlsx"
+    sheet_name: "Extracted Data"
+    raw_path: "data/raw/Dataset 0172.xlsx"
+    rows: 72
+    columns: 10
+    has_missing_values: false
+    constant_features: []
+    targets:
+      common: true
+      special: []
+    notes:
+      - "The inspected file contains common targets only."
+      - "Composite Volume Fraction (%) varies between 0 and 1."
+
+  dataset_3772:
+    filename: "Dataset 3772.xlsx"
+    sheet_name: "Extracted Data"
+    raw_path: "data/raw/Dataset 3772.xlsx"
+    rows: 36
+    columns: 10
+    has_missing_values: false
+    constant_features:
+      - "Composite Volume Fraction (%)"
+    targets:
+      common: true
+      special: []
+    notes:
+      - "Composite Volume Fraction (%) is constant at 1 in this dataset."

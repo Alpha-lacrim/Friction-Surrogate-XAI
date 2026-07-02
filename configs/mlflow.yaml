@@ -1,0 +1,17 @@
+mlflow:
+  tracking_uri: "file:./mlruns"
+  artifact_location: "./mlartifacts"
+  experiment_name: "friction-surrogate-xai"
+  run_naming:
+    include_dataset: true
+    include_pipeline: true
+    include_model: true
+    include_seed: true
+  required_logging:
+    parameters: true
+    metrics: true
+    artifacts: true
+    tags: true
+    configs: true
+    environment: true
+

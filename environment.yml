@@ -1,0 +1,30 @@
+name: friction-surrogate-xai
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - openpyxl
+  - matplotlib
+  - seaborn
+  - statsmodels
+  - pyyaml
+  - joblib
+  - pytest
+  - ruff
+  - black
+  - ipykernel
+  - pip:
+      - mlflow>=2.12,<4.0
+      - optuna>=3.6,<5.0
+      - shap>=0.45,<1.0
+      - lime>=0.2.0.1,<1.0
+      - xgboost>=2.0,<4.0
+      - lightgbm>=4.3,<5.0
+      - scikit-posthocs>=0.9,<1.0
+

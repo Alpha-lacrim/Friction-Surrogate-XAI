@@ -1,0 +1,26 @@
+project:
+  name: friction-surrogate-xai
+  title: Reliable XAI Surrogate Modeling for Friction-Processed Composites
+  objective: >
+    Build reliable, interpretable, and overfitting-resistant surrogate models for
+    mechanical and functional properties from very small experimental datasets.
+  python_version: ">=3.10"
+
+paths:
+  raw_data_dir: data/raw
+  interim_data_dir: data/interim
+  processed_data_dir: data/processed
+  reports_dir: reports
+  figures_dir: reports/figures
+  tables_dir: reports/tables
+  mlflow_screenshots_dir: reports/mlflow_screenshots
+  notebooks_dir: notebooks
+  models_dir: models
+
+governance:
+  delete_outliers: false
+  scale_inside_cv_pipeline_only: true
+  avoid_grid_search: true
+  avoid_deep_ann: true
+  track_every_experiment_with_mlflow: true
+
