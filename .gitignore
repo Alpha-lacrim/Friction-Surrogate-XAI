@@ -47,6 +47,8 @@ reports/preprocessing_artifacts/**
 reports/evaluation/**
 !reports/evaluation/
 !reports/evaluation/README.md
+!reports/evaluation/overfitting/
+!reports/evaluation/overfitting/README.md
 
 # Generated model files
 models/artifacts/

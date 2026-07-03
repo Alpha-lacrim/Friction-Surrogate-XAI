@@ -1,0 +1,306 @@
+modeling:
+  output:
+    root_dir: reports/evaluation/overfitting
+    tables_dir_name: tables
+    markdown_dir_name: markdown
+
+  randomness:
+    default_seed: 42
+    repeated_seeds:
+      - 7
+      - 21
+      - 42
+      - 84
+      - 168
+
+  validation:
+    primary_strategy: repeated_kfold
+    n_splits: 5
+    shuffle: true
+    repeated_kfold:
+      enabled: true
+      n_repeats_per_seed: 1
+    loocv:
+      enabled: true
+      max_samples_for_auto_fallback: 40
+    nested_cv:
+      enabled: true
+      outer_splits: 5
+      inner_splits: 3
+      shuffle: true
+    bootstrap:
+      enabled: true
+      n_iterations: 100
+      sample_fraction: 1.0
+      require_oob_samples: true
+
+  scoring:
+    primary_metric: r2
+    metrics:
+      - r2
+      - rmse
+      - nrmse
+      - mae
+    nrmse_denominator: range
+    higher_is_better:
+      - r2
+
+  overfitting_detection:
+    enabled: true
+    train_validation_gap_warning: 0.15
+    train_validation_gap_high: 0.30
+    validation_std_warning: 0.10
+    validation_std_high: 0.20
+    high_train_score_threshold: 0.90
+    low_validation_score_threshold: 0.60
+    min_validation_folds: 3
+
+  reports:
+    write_csv: true
+    write_markdown: true
+    float_format: ".6g"
+
+  mlflow:
+    enabled: true
+    experiment_name: friction-surrogate-xai-overfitting
+    artifact_path_prefix: overfitting
+    tags:
+      stage: overfitting_audit
+      priority: overfitting_prevention
+
+  model_registry:
+    linear_models:
+      - linear_regression
+      - ridge
+      - elasticnet
+    kernel_models:
+      - svr_rbf
+      - gaussian_process_regression
+    tree_ensembles:
+      - random_forest
+      - extra_trees
+      - gradient_boosting
+      - xgboost
+      - lightgbm
+    neural_networks:
+      - shallow_mlp_regressor
+
+  models:
+    linear_regression:
+      enabled: true
+      display_name: Linear Regression
+      family: baseline_linear
+      random_state_param: null
+      params: {}
+      overfitting_controls:
+        - baseline comparator only
+        - never selected without regularized-model comparison
+
+    ridge:
+      enabled: true
+      display_name: Ridge
+      family: regularized_linear
+      random_state_param: null
+      params:
+        alpha: 10.0
+        fit_intercept: true
+      overfitting_controls:
+        - L2 regularization
+        - conservative default alpha
+
+    elasticnet:
+      enabled: true
+      display_name: ElasticNet
+      family: regularized_linear
+      random_state_param: random_state
+      params:
+        alpha: 0.1
+        l1_ratio: 0.5
+        fit_intercept: true
+        max_iter: 20000
+        tol: 0.0001
+        selection: cyclic
+      overfitting_controls:
+        - L1 and L2 regularization
+        - sparse coefficient pressure
+        - high iteration cap for stable convergence
+
+    svr_rbf:
+      enabled: true
+      display_name: SVR RBF
+      family: kernel
+      random_state_param: null
+      params:
+        kernel: rbf
+        C: 1.0
+        epsilon: 0.1
+        gamma: scale
+      overfitting_controls:
+        - bounded C
+        - epsilon insensitive margin
+        - fold-only scaling required
+
+    gaussian_process_regression:
+      enabled: true
+      display_name: Gaussian Process Regression
+      family: probabilistic_kernel
+      random_state_param: random_state
+      params:
+        alpha: 0.01
+        normalize_y: true
+        n_restarts_optimizer: 0
+      kernel:
+        constant_value: 1.0
+        rbf_length_scale: 1.0
+        white_noise_level: 0.01
+      overfitting_controls:
+        - observation noise alpha
+        - WhiteKernel noise component
+        - no optimizer restarts by default on tiny data
+
+    random_forest:
+      enabled: true
+      display_name: Random Forest
+      family: tree_ensemble
+      random_state_param: random_state
+      params:
+        n_estimators: 300
+        max_depth: 4
+        min_samples_leaf: 3
+        min_samples_split: 4
+        max_features: sqrt
+        bootstrap: true
+        n_jobs: -1
+      overfitting_controls:
+        - max depth limitation
+        - minimum samples per leaf
+        - minimum samples per split
+        - feature subsampling
+        - bootstrap aggregation
+
+    extra_trees:
+      enabled: true
+      display_name: Extra Trees
+      family: tree_ensemble
+      random_state_param: random_state
+      params:
+        n_estimators: 300
+        max_depth: 4
+        min_samples_leaf: 3
+        min_samples_split: 4
+        max_features: sqrt
+        bootstrap: true
+        n_jobs: -1
+      overfitting_controls:
+        - max depth limitation
+        - minimum samples per leaf
+        - randomized split thresholds
+        - feature subsampling
+        - bootstrap aggregation
+
+    gradient_boosting:
+      enabled: true
+      display_name: Gradient Boosting
+      family: boosting
+      random_state_param: random_state
+      params:
+        n_estimators: 300
+        learning_rate: 0.03
+        max_depth: 2
+        min_samples_leaf: 3
+        min_samples_split: 4
+        subsample: 0.8
+        validation_fraction: 0.2
+        n_iter_no_change: 15
+        tol: 0.0001
+      early_stopping:
+        enabled: true
+        mode: sklearn_internal
+      overfitting_controls:
+        - shallow trees
+        - shrinkage learning rate
+        - stochastic subsampling
+        - minimum samples per leaf
+        - internal early stopping
+
+    xgboost:
+      enabled: true
+      display_name: XGBoost
+      family: boosting
+      random_state_param: random_state
+      params:
+        n_estimators: 500
+        learning_rate: 0.03
+        max_depth: 2
+        min_child_weight: 3
+        subsample: 0.8
+        colsample_bytree: 0.8
+        reg_alpha: 0.05
+        reg_lambda: 5.0
+        objective: reg:squarederror
+        n_jobs: -1
+        verbosity: 0
+      early_stopping:
+        enabled: true
+        validation_fraction: 0.2
+        stopping_rounds: 20
+      overfitting_controls:
+        - shallow trees
+        - minimum child weight
+        - row and column subsampling
+        - L1 and L2 regularization
+        - inner-fold early stopping when possible
+
+    lightgbm:
+      enabled: true
+      display_name: LightGBM
+      family: boosting
+      random_state_param: random_state
+      params:
+        n_estimators: 500
+        learning_rate: 0.03
+        max_depth: 3
+        num_leaves: 7
+        min_child_samples: 5
+        subsample: 0.8
+        colsample_bytree: 0.8
+        reg_alpha: 0.05
+        reg_lambda: 5.0
+        n_jobs: -1
+        verbosity: -1
+      early_stopping:
+        enabled: true
+        validation_fraction: 0.2
+        stopping_rounds: 20
+      overfitting_controls:
+        - max depth limitation
+        - small number of leaves
+        - minimum child samples
+        - row and column subsampling
+        - L1 and L2 regularization
+        - inner-fold early stopping when possible
+
+    shallow_mlp_regressor:
+      enabled: true
+      display_name: Shallow MLP Regressor
+      family: neural_network
+      random_state_param: random_state
+      params:
+        hidden_layer_sizes:
+          - 16
+        activation: relu
+        solver: adam
+        alpha: 0.01
+        learning_rate_init: 0.001
+        max_iter: 1000
+        early_stopping: true
+        validation_fraction: 0.2
+        n_iter_no_change: 20
+      early_stopping:
+        enabled: true
+        mode: sklearn_internal
+      overfitting_controls:
+        - shallow single hidden layer
+        - L2 regularization alpha
+        - internal early stopping
+        - small hidden width for tiny data

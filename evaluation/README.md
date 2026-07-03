@@ -15,6 +15,7 @@ pipelines, then generates:
 - optional sklearn validation curves
 - CSV and Markdown reports
 - MLflow metrics and artifacts
+- overfitting audit summaries from train/validation gaps and fold variance
 
 Generated evaluation artifacts are written to `reports/evaluation/` and ignored
 by Git.

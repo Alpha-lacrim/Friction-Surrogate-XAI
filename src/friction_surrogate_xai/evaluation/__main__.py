@@ -11,6 +11,7 @@ def main() -> None:
     print("Evaluation framework is importable.")
     print(f"Output root: {config.output_root}")
     print(f"Metrics: {', '.join(config.metrics.get('regression', []))}")
+    print("Overfitting audit API: friction_surrogate_xai.evaluation.OverfittingAuditRunner")
 
 
 if __name__ == "__main__":

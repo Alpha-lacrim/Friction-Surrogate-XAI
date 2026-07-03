@@ -12,5 +12,6 @@ Expected generated outputs include:
 - residual plots
 - learning curves
 - validation curves
+- overfitting audit reports
 
 Generated dataset/model run directories are ignored by Git.

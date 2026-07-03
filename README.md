@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, and a reusable evaluation framework. It intentionally does not implement model training, hyperparameter optimization, SHAP/LIME analysis, or uncertainty quantification yet.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, and an overfitting-first model audit layer. It intentionally does not implement hyperparameter optimization, SHAP/LIME analysis, or uncertainty quantification yet.
 
 ## Research Scope
 
@@ -165,6 +165,27 @@ The framework is configured by `configs/evaluation.yaml` and generates:
 
 Generated artifacts are written under `reports/evaluation/` and logged to MLflow experiment `friction-surrogate-xai-evaluation` when logging is enabled.
 
+## Overfitting Audits
+
+The modeling layer is configured by `configs/modeling.yaml` and builds conservative estimator defaults for:
+
+- Linear Regression, Ridge, and ElasticNet
+- SVR with RBF kernel
+- Gaussian Process Regression
+- Random Forest, Extra Trees, and Gradient Boosting
+- XGBoost and LightGBM
+- shallow `MLPRegressor`
+
+Anti-overfitting controls include regularization, shallow tree depth, minimum samples per leaf/split, row and feature subsampling, bootstrap aggregation, early stopping where compatible, five repeated random seeds, repeated KFold, LOOCV support, nested CV split infrastructure, and bootstrap out-of-bag evaluation.
+
+Run an audit for a dataset target:
+
+```bash
+python experiments/run_overfitting_audit.py --dataset dataset_0172 --target "wear rate" --models ridge random_forest --no-mlflow
+```
+
+Generated reports compare training score, validation score, generalization gap, and variance across folds. Models crossing configured thresholds are flagged in `reports/evaluation/overfitting/`.
+
 ## Environment
 
 Recommended setup:
@@ -186,8 +207,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, and evaluation framework. Tests that need raw Excel/PDF files are skipped when local raw files are absent. They do not train project models.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, and overfitting audit layer. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
 
 ## Future Work
 
-The next implementation phase should add model/pipeline factories with MLflow tracking. Keep model validation wired so the saved preprocessing pipeline is cloned and fit inside each CV fold, then call the reusable evaluation framework with the resulting predictions and fold metrics.
+The next implementation phase should add Random Search and Optuna selection on top of the overfitting audit infrastructure. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.

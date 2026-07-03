@@ -231,7 +231,7 @@ class RegressionMetricCalculator:
     def _single_target_metrics(self, y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
         values: dict[str, float] = {}
         if "r2" in self.metrics:
-            values["r2"] = float(r2_score(y_true, y_pred))
+            values["r2"] = float(r2_score(y_true, y_pred)) if y_true.size >= 2 else np.nan
         if "rmse" in self.metrics or "nrmse" in self.metrics:
             rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
             if "rmse" in self.metrics:
