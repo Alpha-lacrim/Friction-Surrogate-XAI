@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, and an overfitting-first model audit layer. It intentionally does not implement hyperparameter optimization, SHAP/LIME analysis, or uncertainty quantification yet.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, and staged hyperparameter optimization. It intentionally does not implement SHAP/LIME analysis or uncertainty quantification yet.
 
 ## Research Scope
 
@@ -186,6 +186,35 @@ python experiments/run_overfitting_audit.py --dataset dataset_0172 --target "wea
 
 Generated reports compare training score, validation score, generalization gap, and variance across folds. Models crossing configured thresholds are flagged in `reports/evaluation/overfitting/`.
 
+## Hyperparameter Optimization
+
+The optimization layer is configured by `configs/optimization.yaml` and implemented under `friction_surrogate_xai.optimization`.
+
+The workflow is deliberately staged:
+
+- Stage 1: Random Search for every selected model.
+- Stage 2: select the top 3 models by validation score.
+- Stage 3: run Optuna Bayesian optimization only for those top 3 models.
+- Grid Search is not used.
+
+Run optimization for one dataset target:
+
+```bash
+python experiments/run_hyperparameter_optimization.py --dataset dataset_0172 --target "wear rate" --models ridge elasticnet random_forest --no-mlflow
+```
+
+Generated artifacts are written under `reports/optimization/`:
+
+- best parameters as CSV and JSON
+- full optimization history
+- Stage 1 Random Search history
+- Stage 2 top-model table
+- Stage 3 Optuna history
+- Optuna parameter importance tables
+- optimization history plots, top-model plots, and parameter-importance plots
+
+When MLflow is enabled, every Random Search and Optuna trial is logged as its own MLflow run.
+
 ## Environment
 
 Recommended setup:
@@ -207,8 +236,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, and overfitting audit layer. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, and staged hyperparameter optimization. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
 
 ## Future Work
 
-The next implementation phase should add Random Search and Optuna selection on top of the overfitting audit infrastructure. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.
+The next implementation phase should add SHAP/LIME interpretability and uncertainty quantification on top of the selected models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.

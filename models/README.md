@@ -16,3 +16,8 @@ small-data-first defaults for every supported regressor:
 
 Do not add high-capacity defaults without also adding explicit overfitting
 controls and tests.
+
+Hyperparameter tuning is implemented separately under
+`src/friction_surrogate_xai/optimization/`. It uses Random Search for all
+selected models, then Optuna only for the top 3 models from Stage 1. Grid Search
+is intentionally not part of this project.

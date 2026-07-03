@@ -70,10 +70,15 @@ class ModelFactory:
             enabled=bool(raw_spec.get("enabled", True)),
         )
 
-    def build(self, model_key: str, random_state: int | None = None) -> BaseEstimator:
+    def build(
+        self,
+        model_key: str,
+        random_state: int | None = None,
+        params_override: dict[str, Any] | None = None,
+    ) -> BaseEstimator:
         """Build an unfitted estimator with configured anti-overfitting controls."""
         spec = self.spec(model_key)
-        params = self._params_with_seed(spec, random_state)
+        params = self._params_with_seed(spec, random_state, params_override=params_override)
 
         if model_key == "linear_regression":
             return LinearRegression(**params)
@@ -122,12 +127,21 @@ class ModelFactory:
             )
         return pd.DataFrame(rows)
 
-    def _params_with_seed(self, spec: ModelSpec, random_state: int | None) -> dict[str, Any]:
+    def _params_with_seed(
+        self,
+        spec: ModelSpec,
+        random_state: int | None,
+        params_override: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         params = dict(spec.params)
+        params.update(params_override or {})
         if spec.random_state_param and random_state is not None:
             params[spec.random_state_param] = random_state
         if "hidden_layer_sizes" in params and isinstance(params["hidden_layer_sizes"], list):
             params["hidden_layer_sizes"] = tuple(params["hidden_layer_sizes"])
+        for key, value in list(params.items()):
+            if isinstance(value, list):
+                params[key] = tuple(value)
         return params
 
     def _gpr_kernel(self, model_key: str) -> ConstantKernel:
