@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, and staged hyperparameter optimization. It intentionally does not implement SHAP/LIME analysis or uncertainty quantification yet.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, staged hyperparameter optimization, and discrete-input dataset comparison workflows. It intentionally does not implement SHAP/LIME analysis or uncertainty quantification yet.
 
 ## Research Scope
 
@@ -215,6 +215,40 @@ Generated artifacts are written under `reports/optimization/`:
 
 When MLflow is enabled, every Random Search and Optuna trial is logged as its own MLflow run.
 
+## Discrete Inputs
+
+The discretization layer is configured by `configs/discretization.yaml` and implemented under `friction_surrogate_xai.discretization`.
+
+It generates one discrete-input dataset per original dataset:
+
+- `dataset_0136_discrete`
+- `dataset_0172_discrete`
+- `dataset_3772_discrete`
+
+Configured continuous process inputs are converted to integer bins while target columns are preserved unchanged. The binning method is configurable, with quantile and uniform binning supported. Constant and low-cardinality integer features are handled explicitly so no rows are removed.
+
+Run the full workflow:
+
+```bash
+python -m friction_surrogate_xai.discretization
+```
+
+Useful variants:
+
+```bash
+python -m friction_surrogate_xai.discretization --skip-comparison --no-mlflow
+python -m friction_surrogate_xai.discretization --targets "wear rate" --models ridge elasticnet linear_regression
+```
+
+Generated outputs include:
+
+- processed discrete datasets under `data/processed/discrete/`
+- discretization metadata and bin mappings under `reports/discretization/`
+- original-vs-discrete comparison reports for the configured targets
+- MLflow logs for dataset generation and comparison runs
+
+For comparisons, the workflow resolves the Top 3 models from existing optimization artifacts when available, otherwise it uses the configured fallback Top 3 for fresh clones. Original and discrete variants use identical models, hyperparameters, CV splits, seeds, metrics, and fold-local preprocessing.
+
 ## Environment
 
 Recommended setup:
@@ -236,8 +270,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, and staged hyperparameter optimization. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, and discrete-input comparison workflow. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
 
 ## Future Work
 
-The next implementation phase should add SHAP/LIME interpretability and uncertainty quantification on top of the selected models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.
+The next implementation phase should add SHAP/LIME interpretability and uncertainty quantification on top of the selected original/discrete models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.

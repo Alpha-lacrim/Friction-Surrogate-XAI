@@ -32,6 +32,9 @@ data/interim/*
 !data/interim/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/discrete/
+data/processed/discrete/**
+!data/processed/discrete/README.md
 reports/figures/*
 !reports/figures/.gitkeep
 reports/tables/*
@@ -52,6 +55,9 @@ reports/evaluation/**
 reports/optimization/**
 !reports/optimization/
 !reports/optimization/README.md
+reports/discretization/**
+!reports/discretization/
+!reports/discretization/README.md
 
 # Generated model files
 models/artifacts/
