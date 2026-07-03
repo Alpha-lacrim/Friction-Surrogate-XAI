@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, and leakage-safe preprocessing pipeline builders. It intentionally does not implement model training, hyperparameter optimization, SHAP/LIME analysis, or uncertainty quantification yet.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, and a reusable evaluation framework. It intentionally does not implement model training, hyperparameter optimization, SHAP/LIME analysis, or uncertainty quantification yet.
 
 ## Research Scope
 
@@ -30,7 +30,7 @@ experiments/              Future experiment entrypoints and run scripts
 pipelines/                Future top-level pipeline scripts
 models/                   Future trained model artifacts and model docs
 preprocessing/            Future preprocessing scripts
-evaluation/               Future metric and statistical comparison scripts
+evaluation/               Evaluation reports and statistical comparison docs
 visualization/            Future plotting scripts and helpers
 xai/                      Future SHAP, LIME, and feature-importance workflows
 uncertainty/              Future prediction interval and bootstrap workflows
@@ -134,6 +134,37 @@ Leakage policy:
 
 Generated artifacts are written under `reports/preprocessing_artifacts/` and logged to MLflow experiment `friction-surrogate-xai-preprocessing`.
 
+## Evaluation
+
+The package exposes a reusable evaluation framework under `friction_surrogate_xai.evaluation`.
+
+```python
+from friction_surrogate_xai.evaluation import EvaluationReportGenerator
+
+artifacts = EvaluationReportGenerator().generate(
+    dataset_key="dataset_0172",
+    model_name="future_model_name",
+    y_train_true=y_train,
+    y_train_pred=train_predictions,
+    y_test_true=y_test,
+    y_test_pred=test_predictions,
+    target_names=("wear rate",),
+    fold_metrics=cv_fold_metrics,
+)
+```
+
+The framework is configured by `configs/evaluation.yaml` and generates:
+
+- R2, RMSE, NRMSE, and MAE
+- train/test gap tables
+- fold-stability summaries with mean, standard deviation, and confidence intervals
+- prediction-vs-actual plots
+- residual plots
+- optional sklearn learning curves and validation curves
+- CSV reports and publication-ready Markdown tables
+
+Generated artifacts are written under `reports/evaluation/` and logged to MLflow experiment `friction-surrogate-xai-evaluation` when logging is enabled.
+
 ## Environment
 
 Recommended setup:
@@ -155,8 +186,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, and preprocessing pipelines. Tests that need raw Excel/PDF files are skipped when local raw files are absent. They do not train models.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, and evaluation framework. Tests that need raw Excel/PDF files are skipped when local raw files are absent. They do not train project models.
 
 ## Future Work
 
-The next implementation phase should add model/pipeline factories with MLflow tracking. Keep model validation wired so the saved preprocessing pipeline is cloned and fit inside each CV fold.
+The next implementation phase should add model/pipeline factories with MLflow tracking. Keep model validation wired so the saved preprocessing pipeline is cloned and fit inside each CV fold, then call the reusable evaluation framework with the resulting predictions and fold metrics.

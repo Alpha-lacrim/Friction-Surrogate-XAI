@@ -44,6 +44,9 @@ reports/eda/**
 reports/preprocessing_artifacts/**
 !reports/preprocessing_artifacts/
 !reports/preprocessing_artifacts/README.md
+reports/evaluation/**
+!reports/evaluation/
+!reports/evaluation/README.md
 
 # Generated model files
 models/artifacts/
