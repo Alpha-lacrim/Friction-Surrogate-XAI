@@ -61,6 +61,9 @@ reports/discretization/**
 reports/xai/**
 !reports/xai/
 !reports/xai/README.md
+reports/uncertainty/**
+!reports/uncertainty/
+!reports/uncertainty/README.md
 
 # Generated model files
 models/artifacts/

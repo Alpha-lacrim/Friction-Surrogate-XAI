@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, staged hyperparameter optimization, discrete-input dataset comparison workflows, and an explainability framework. It intentionally does not implement uncertainty quantification yet.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, staged hyperparameter optimization, discrete-input dataset comparison workflows, an explainability framework, and uncertainty estimation workflows.
 
 ## Research Scope
 
@@ -33,7 +33,7 @@ preprocessing/            Future preprocessing scripts
 evaluation/               Evaluation reports and statistical comparison docs
 visualization/            Future plotting scripts and helpers
 xai/                      Explainability workflow docs and helper scripts
-uncertainty/              Future prediction interval and bootstrap workflows
+uncertainty/              Uncertainty estimation workflow docs
 utils/                    Future top-level utility scripts
 notebooks/                Future EDA and analysis notebooks
 reports/                  Future figures, tables, screenshots, and final report
@@ -271,6 +271,26 @@ Generated artifacts are written under `reports/xai/` and include:
 
 When MLflow is enabled, the complete XAI run directory is logged to experiment `friction-surrogate-xai-explainability`.
 
+## Uncertainty
+
+The uncertainty layer is configured by `configs/uncertainty.yaml` and implemented under `friction_surrogate_xai.uncertainty`.
+
+Run one uncertainty report:
+
+```bash
+python -m friction_surrogate_xai.uncertainty --dataset dataset_0172 --target "wear rate" --models gaussian_process_regression ridge random_forest --no-mlflow
+```
+
+Generated artifacts are written under `reports/uncertainty/` and include:
+
+- GPR predictive mean, predictive variance, prediction intervals, and confidence-band plots
+- bootstrap out-of-bag prediction intervals for non-GPR models
+- coverage probability, interval width, and predictive-variance summaries
+- model comparison reports ranking interval calibration and width
+- Markdown summaries and MLflow artifact logging
+
+All uncertainty estimators fit preprocessing inside the GPR CV folds or bootstrap samples before predicting held-out samples.
+
 ## Environment
 
 Recommended setup:
@@ -292,8 +312,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, and explainability framework. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, explainability framework, and uncertainty estimation. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
 
 ## Future Work
 
-The next implementation phase should add uncertainty quantification on top of the selected original/discrete models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.
+The next implementation phase should add final model comparison and integrated report generation on top of the selected original/discrete models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.

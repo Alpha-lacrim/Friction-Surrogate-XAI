@@ -1,0 +1,68 @@
+uncertainty:
+  output:
+    root_dir: reports/uncertainty
+    figures_dir_name: figures
+    tables_dir_name: tables
+    markdown_dir_name: markdown
+
+  models:
+    default_model_keys:
+      - gaussian_process_regression
+      - linear_regression
+      - ridge
+      - elasticnet
+      - svr_rbf
+      - random_forest
+      - extra_trees
+      - gradient_boosting
+      - xgboost
+      - lightgbm
+      - shallow_mlp_regressor
+    gpr_model_key: gaussian_process_regression
+
+  intervals:
+    confidence_level: 0.95
+    random_state: 42
+    sort_confidence_bands_by: sample_index
+
+  gpr:
+    enabled: true
+    cv_splits: 5
+    repeated_seeds:
+      - 7
+      - 21
+      - 42
+      - 84
+      - 168
+    shuffle: true
+    method_name: gpr_predictive_distribution
+
+  bootstrap:
+    enabled: true
+    n_iterations: 200
+    sample_fraction: 1.0
+    require_oob_samples: true
+    min_predictions_per_sample: 5
+    method_name: bootstrap_oob_prediction_interval
+
+  reports:
+    write_csv: true
+    write_markdown: true
+    float_format: ".6g"
+
+  plots:
+    enabled: true
+    style: whitegrid
+    context: paper
+    palette: deep
+    dpi: 300
+    figure_format: png
+    max_band_points: 120
+
+  mlflow:
+    enabled: true
+    experiment_name: friction-surrogate-xai-uncertainty
+    artifact_path_prefix: uncertainty
+    tags:
+      stage: uncertainty
+      policy: interval_estimation
