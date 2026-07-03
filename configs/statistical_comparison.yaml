@@ -1,0 +1,91 @@
+statistical_comparison:
+  output:
+    root_dir: reports/statistical_comparison
+    tables_dir_name: tables
+    figures_dir_name: figures
+    markdown_dir_name: markdown
+
+  inputs:
+    auto_discover: true
+    explicit_score_paths: []
+    discretization_variant_pattern: reports/discretization/comparisons/*/*/tables/variant_scores.csv
+    overfitting_fold_pattern: reports/evaluation/overfitting/*/*/tables/fold_scores.csv
+
+  schema:
+    metric_column: score
+    higher_is_better: true
+    block_columns:
+      - dataset_key
+      - target_name
+      - block_id
+
+  comparisons:
+    top_models:
+      enabled: true
+      group_column: model_key
+      context_columns:
+        - dataset_key
+        - target_name
+        - variant
+        - output_mode
+      min_groups: 2
+    original_vs_discrete:
+      enabled: true
+      group_column: variant
+      group_values:
+        - original
+        - discrete
+      context_columns:
+        - dataset_key
+        - target_name
+        - model_key
+        - output_mode
+    single_vs_multi_output:
+      enabled: true
+      group_column: output_mode
+      group_values:
+        - single_output
+        - multi_output
+      context_columns:
+        - dataset_key
+        - target_name
+        - model_key
+        - variant
+
+  tests:
+    alpha: 0.05
+    wilcoxon:
+      enabled: true
+      alternative: two-sided
+      zero_method: wilcox
+      correction: false
+      min_pairs: 3
+    friedman:
+      enabled: true
+      min_blocks: 3
+      min_groups: 3
+    nemenyi:
+      enabled: true
+      min_blocks: 3
+      min_groups: 3
+
+  reports:
+    write_csv: true
+    write_markdown: true
+    float_format: ".6g"
+
+  plots:
+    enabled: true
+    style: whitegrid
+    context: paper
+    palette: deep
+    dpi: 300
+    figure_format: png
+
+  mlflow:
+    enabled: true
+    experiment_name: friction-surrogate-xai-statistical-comparison
+    artifact_path_prefix: statistical_comparison
+    tags:
+      stage: statistical_comparison
+      policy: nonparametric_small_data_tests

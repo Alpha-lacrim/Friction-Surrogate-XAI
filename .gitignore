@@ -64,6 +64,9 @@ reports/xai/**
 reports/uncertainty/**
 !reports/uncertainty/
 !reports/uncertainty/README.md
+reports/statistical_comparison/**
+!reports/statistical_comparison/
+!reports/statistical_comparison/README.md
 
 # Generated model files
 models/artifacts/

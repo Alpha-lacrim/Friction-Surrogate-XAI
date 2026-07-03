@@ -291,6 +291,35 @@ Generated artifacts are written under `reports/uncertainty/` and include:
 
 All uncertainty estimators fit preprocessing inside the GPR CV folds or bootstrap samples before predicting held-out samples.
 
+## Statistical Comparison
+
+The statistical-comparison layer is configured by `configs/statistical_comparison.yaml` and implemented under `friction_surrogate_xai.statistical_comparison`.
+
+Run the auto-discovery workflow:
+
+```bash
+python -m friction_surrogate_xai.statistical_comparison --no-mlflow
+```
+
+Or pass explicit normalized score CSV files:
+
+```bash
+python -m friction_surrogate_xai.statistical_comparison --input path/to/scores.csv --no-mlflow
+```
+
+Generated artifacts are written under `reports/statistical_comparison/` and include:
+
+- normalized score tables
+- Wilcoxon signed-rank pairwise tests
+- Friedman omnibus tests
+- Nemenyi post-hoc pairwise comparisons
+- average-rank tables
+- significant-finding tables
+- p-value heatmaps and average-rank plots
+- Markdown summaries and MLflow artifact logging
+
+The workflow automatically supports the project comparison families when matching score rows are available: top models, original-vs-discrete inputs, and single-output-vs-multi-output runs.
+
 ## Environment
 
 Recommended setup:
@@ -312,7 +341,7 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, explainability framework, and uncertainty estimation. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, explainability framework, uncertainty estimation, and statistical comparison. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
 
 ## Future Work
 
