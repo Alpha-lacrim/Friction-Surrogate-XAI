@@ -598,6 +598,8 @@ class OverfittingAuditRunner:
         metrics["early_stopping_applied"] = fit_metadata.early_stopping_applied
         metrics["early_stopping_status"] = fit_metadata.early_stopping_status
         metrics["preprocessing_policy"] = "fit_preprocessor_inside_each_fold"
+        metrics["variant"] = "original"
+        metrics["output_mode"] = "multi_output" if len(target_names) > 1 else "single_output"
         return metrics
 
     def _fit_estimator(

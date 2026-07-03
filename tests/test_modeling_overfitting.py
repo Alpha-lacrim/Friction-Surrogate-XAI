@@ -31,6 +31,16 @@ def _small_target(n_rows: int = 18) -> pd.Series:
     )
 
 
+def _small_multi_target(n_rows: int = 18) -> pd.DataFrame:
+    wear_rate = _small_target(n_rows)
+    return pd.DataFrame(
+        {
+            "wear rate": wear_rate,
+            "Hardness (HV)": wear_rate * 2.0 + 5.0,
+        }
+    )
+
+
 def _fast_config(tmp_path=None):
     config = with_overrides(
         load_modeling_config(),
@@ -163,3 +173,23 @@ def test_overfitting_audit_runner_generates_report_without_data_leakage(tmp_path
         set(artifacts.fold_scores["validation_strategy"])
     )
     assert not artifacts.summary.empty
+
+
+def test_overfitting_audit_runner_tags_multi_output_scores(tmp_path) -> None:
+    config = _fast_config(tmp_path)
+    artifacts = OverfittingAuditRunner(config=config).run(
+        dataset_key="dataset_0172",
+        X=_small_feature_frame(),
+        y=_small_multi_target(),
+        model_keys=("ridge",),
+        strategy="repeated_kfold",
+        include_bootstrap=False,
+        include_nested=False,
+        log_to_mlflow=False,
+    )
+
+    assert set(artifacts.fold_scores["output_mode"]) == {"multi_output"}
+    assert set(artifacts.fold_scores["variant"]) == {"original"}
+    assert {"wear rate", "Hardness (HV)", "__aggregate__"}.issubset(
+        set(artifacts.fold_scores["target"])
+    )

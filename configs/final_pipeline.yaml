@@ -1,0 +1,75 @@
+final_pipeline:
+  run:
+    run_id: latest
+    root_dir: reports/final_pipeline
+    resume: true
+    force_rerun: false
+    continue_on_error: true
+    log_to_mlflow: true
+
+  selection:
+    dataset_keys:
+      - dataset_0136
+      - dataset_0172
+      - dataset_3772
+    target_columns:
+      - Si Particle Size (um)
+      - Hardness (HV)
+      - wear rate
+      - Ultimate Compression Strength (MPa)
+      - Elongation (%)
+      - Temperature (Â°C)
+      - Strain
+    model_keys: all
+    xai_fallback_models:
+      - ridge
+    uncertainty_models:
+      - gaussian_process_regression
+      - ridge
+
+  stages:
+    load_datasets: true
+    preprocessing: true
+    eda: true
+    discretization: true
+    training_evaluation: true
+    optimization: true
+    uncertainty: true
+    xai: true
+    statistical_comparison: true
+    final_report: true
+
+  stage_options:
+    training_evaluation:
+      strategy: repeated_kfold
+      run_single_output: true
+      run_multi_output: true
+      include_bootstrap: false
+      include_nested: false
+    optimization:
+      run_single_output: true
+      run_multi_output: true
+    discretization:
+      compare: true
+    xai:
+      safe_optional_dependencies: true
+    statistical_comparison:
+      auto_discover: true
+
+  component_overrides:
+    preprocessing: {}
+    eda: {}
+    discretization: {}
+    modeling: {}
+    optimization: {}
+    uncertainty: {}
+    xai: {}
+    statistical_comparison: {}
+
+  mlflow:
+    enabled: true
+    experiment_name: friction-surrogate-xai-final-pipeline
+    artifact_path_prefix: final_pipeline
+    tags:
+      stage: final_pipeline
+      policy: resumable_orchestration

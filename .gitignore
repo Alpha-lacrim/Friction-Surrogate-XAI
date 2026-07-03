@@ -67,6 +67,9 @@ reports/uncertainty/**
 reports/statistical_comparison/**
 !reports/statistical_comparison/
 !reports/statistical_comparison/README.md
+reports/final_pipeline/**
+!reports/final_pipeline/
+!reports/final_pipeline/README.md
 
 # Generated model files
 models/artifacts/

@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, staged hyperparameter optimization, discrete-input dataset comparison workflows, an explainability framework, and uncertainty estimation workflows.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, staged hyperparameter optimization, discrete-input dataset comparison workflows, an explainability framework, uncertainty estimation workflows, statistical model comparison, and a resumable final orchestration pipeline.
 
 ## Research Scope
 
@@ -27,7 +27,7 @@ data/raw/                 Canonical assignment PDF and Excel datasets
 data/interim/             Future intermediate data artifacts
 data/processed/           Future processed and discretized datasets
 experiments/              Future experiment entrypoints and run scripts
-pipelines/                Future top-level pipeline scripts
+pipelines/                Top-level pipeline docs and future shell wrappers
 models/                   Future trained model artifacts and model docs
 preprocessing/            Future preprocessing scripts
 evaluation/               Evaluation reports and statistical comparison docs
@@ -320,6 +320,37 @@ Generated artifacts are written under `reports/statistical_comparison/` and incl
 
 The workflow automatically supports the project comparison families when matching score rows are available: top models, original-vs-discrete inputs, and single-output-vs-multi-output runs.
 
+## Final Pipeline
+
+The final orchestration layer is configured by `configs/final_pipeline.yaml` and implemented under `friction_surrogate_xai.pipelines`.
+
+Run the complete resumable workflow:
+
+```bash
+python -m friction_surrogate_xai.pipelines
+```
+
+For a dry local run without MLflow logging:
+
+```bash
+python -m friction_surrogate_xai.pipelines --no-mlflow
+```
+
+The final pipeline coordinates:
+
+- dataset loading and validation
+- leakage-safe preprocessing artifact generation
+- EDA generation
+- discrete-input dataset generation and original-vs-discrete comparison
+- single-output and multi-output all-model training/evaluation audits
+- single-output and multi-output staged Random Search and Optuna optimization
+- uncertainty reports
+- XAI reports
+- statistical comparison
+- final Markdown/CSV project report generation
+
+The pipeline writes persistent state after every stage under `reports/final_pipeline/<run_id>/state/pipeline_state.json`. With `resume: true`, completed stages are skipped on the next run, and with `continue_on_error: true`, later stages can still run after a failure so earlier experiments and artifacts are preserved. Final reports are written under `reports/final_pipeline/<run_id>/markdown/`.
+
 ## Environment
 
 Recommended setup:
@@ -341,8 +372,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, explainability framework, uncertainty estimation, and statistical comparison. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, explainability framework, uncertainty estimation, statistical comparison, and final orchestration pipeline. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
 
 ## Future Work
 
-The next implementation phase should add final model comparison and integrated report generation on top of the selected original/discrete models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.
+Future work should generate the exhaustive experiment matrix for every dataset, target, original/discrete variant, and single/multi-output setting, then polish the final mechanical-engineering narrative from those completed artifacts. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.
