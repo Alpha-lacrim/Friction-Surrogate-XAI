@@ -2,7 +2,7 @@
 
 Production-oriented research skeleton for developing reliable, interpretable, and overfitting-resistant surrogate models for friction-processed composite properties from extremely small experimental datasets.
 
-This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, staged hyperparameter optimization, and discrete-input dataset comparison workflows. It intentionally does not implement SHAP/LIME analysis or uncertainty quantification yet.
+This repository currently contains project infrastructure, a complete configurable data layer, an automated research-grade EDA module, leakage-safe preprocessing pipeline builders, a reusable evaluation framework, an overfitting-first model audit layer, staged hyperparameter optimization, discrete-input dataset comparison workflows, and an explainability framework. It intentionally does not implement uncertainty quantification yet.
 
 ## Research Scope
 
@@ -32,7 +32,7 @@ models/                   Future trained model artifacts and model docs
 preprocessing/            Future preprocessing scripts
 evaluation/               Evaluation reports and statistical comparison docs
 visualization/            Future plotting scripts and helpers
-xai/                      Future SHAP, LIME, and feature-importance workflows
+xai/                      Explainability workflow docs and helper scripts
 uncertainty/              Future prediction interval and bootstrap workflows
 utils/                    Future top-level utility scripts
 notebooks/                Future EDA and analysis notebooks
@@ -249,6 +249,28 @@ Generated outputs include:
 
 For comparisons, the workflow resolves the Top 3 models from existing optimization artifacts when available, otherwise it uses the configured fallback Top 3 for fresh clones. Original and discrete variants use identical models, hyperparameters, CV splits, seeds, metrics, and fold-local preprocessing.
 
+## Explainability
+
+The explainability layer is configured by `configs/xai.yaml` and implemented under `friction_surrogate_xai.xai`.
+
+Run one XAI report:
+
+```bash
+python -m friction_surrogate_xai.xai --dataset dataset_0172 --target "wear rate" --model random_forest --no-mlflow
+```
+
+Generated artifacts are written under `reports/xai/` and include:
+
+- global and local SHAP tables
+- SHAP beeswarm, summary, waterfall, dependence, and interaction plots
+- permutation-importance tables and figures
+- tree feature-importance tables and figures when the estimator exposes them
+- tree-interpreter style local contribution reports, with Tree SHAP fallback when `treeinterpreter` is unavailable
+- LIME local explanation tables and figures
+- Markdown scientific interpretations covering important variables, positive and negative effects, nonlinear behavior, feature interactions, and possible engineering interpretation
+
+When MLflow is enabled, the complete XAI run directory is logged to experiment `friction-surrogate-xai-explainability`.
+
 ## Environment
 
 Recommended setup:
@@ -270,8 +292,8 @@ python -m pytest
 python -m friction_surrogate_xai
 ```
 
-These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, and discrete-input comparison workflow. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
+These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, and explainability framework. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
 
 ## Future Work
 
-The next implementation phase should add SHAP/LIME interpretability and uncertainty quantification on top of the selected original/discrete models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.
+The next implementation phase should add uncertainty quantification on top of the selected original/discrete models. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.

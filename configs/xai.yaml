@@ -1,0 +1,76 @@
+xai:
+  output:
+    root_dir: reports/xai
+    figures_dir_name: figures
+    tables_dir_name: tables
+    markdown_dir_name: markdown
+
+  data:
+    background_sample_size: 50
+    local_sample_count: 3
+    random_state: 42
+
+  shap:
+    enabled: true
+    explainer: auto
+    max_display: 12
+    dependence_top_n: 3
+    interaction_top_n: 2
+    waterfall_local_samples: 3
+    beeswarm: true
+    summary_plot: true
+    dependence_plot: true
+    interaction_plot: true
+    waterfall: true
+
+  permutation_importance:
+    enabled: true
+    n_repeats: 20
+    scoring: r2
+    random_state: 42
+
+  tree_importance:
+    enabled: true
+
+  tree_interpreter:
+    enabled: true
+    max_local_samples: 3
+    fallback_to_tree_shap: true
+
+  lime:
+    enabled: true
+    max_local_samples: 3
+    num_features: 8
+    discretize_continuous: true
+    random_state: 42
+
+  interpretation:
+    top_n_features: 5
+    nonlinear_bins: 4
+    correlation_threshold: 0.15
+    engineering_notes:
+      "Rotational Speed": "Rotational speed is associated with heat generation, stirring intensity, and material flow during processing."
+      "Plunging Speed": "Plunging speed is associated with contact time, deformation rate, and heat input during tool penetration."
+      "Composite Volume Fraction (%)": "Composite volume fraction reflects reinforcement content and can affect load transfer, hardness, wear behavior, and ductility."
+      "Tool Shape": "Tool shape affects local material flow, contact conditions, and mixing uniformity."
+
+  reports:
+    write_csv: true
+    write_markdown: true
+    float_format: ".6g"
+
+  plots:
+    enabled: true
+    style: whitegrid
+    context: paper
+    palette: deep
+    dpi: 300
+    figure_format: png
+
+  mlflow:
+    enabled: true
+    experiment_name: friction-surrogate-xai-explainability
+    artifact_path_prefix: xai
+    tags:
+      stage: explainability
+      policy: scientific_interpretation

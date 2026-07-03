@@ -58,6 +58,9 @@ reports/optimization/**
 reports/discretization/**
 !reports/discretization/
 !reports/discretization/README.md
+reports/xai/**
+!reports/xai/
+!reports/xai/README.md
 
 # Generated model files
 models/artifacts/
