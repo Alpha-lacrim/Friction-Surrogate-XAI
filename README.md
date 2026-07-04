@@ -336,6 +336,18 @@ For a dry local run without MLflow logging:
 python -m friction_surrogate_xai.pipelines --no-mlflow
 ```
 
+Fast smoke run for checking the full orchestration wiring on one dataset, one target, and one model:
+
+```bash
+python -m friction_surrogate_xai.pipelines --config configs/final_pipeline_smoke.yaml --no-mlflow
+```
+
+On machines where a user-site Python package conflicts with the active conda environment, disable user-site packages before running:
+
+```powershell
+$env:PYTHONNOUSERSITE = "1"
+```
+
 The final pipeline coordinates:
 
 - dataset loading and validation

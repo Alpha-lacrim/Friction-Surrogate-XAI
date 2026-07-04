@@ -1,0 +1,153 @@
+final_pipeline:
+  run:
+    run_id: smoke_latest
+    root_dir: reports/final_pipeline
+    resume: true
+    force_rerun: true
+    continue_on_error: true
+    log_to_mlflow: false
+
+  selection:
+    dataset_keys:
+      - dataset_0172
+    target_columns:
+      - wear rate
+    model_keys:
+      - ridge
+    xai_fallback_models:
+      - ridge
+    uncertainty_models:
+      - ridge
+
+  stages:
+    load_datasets: true
+    preprocessing: true
+    eda: true
+    discretization: true
+    training_evaluation: true
+    optimization: true
+    uncertainty: true
+    xai: true
+    statistical_comparison: true
+    final_report: true
+
+  stage_options:
+    training_evaluation:
+      strategy: repeated_kfold
+      run_single_output: true
+      run_multi_output: false
+      include_bootstrap: false
+      include_nested: false
+    optimization:
+      run_single_output: true
+      run_multi_output: false
+    discretization:
+      compare: true
+    xai:
+      safe_optional_dependencies: true
+      model_keys:
+        - ridge
+    statistical_comparison:
+      auto_discover: true
+
+  component_overrides:
+    preprocessing:
+      output:
+        root_dir: reports/final_pipeline/smoke_components/preprocessing
+      mlflow:
+        enabled: false
+    eda:
+      output:
+        root_dir: reports/final_pipeline/smoke_components/eda
+      mlflow:
+        enabled: false
+    discretization:
+      output:
+        dataset_root_dir: reports/final_pipeline/smoke_components/discrete_datasets
+        report_root_dir: reports/final_pipeline/smoke_components/discretization
+      comparison:
+        cv_splits: 3
+        repeated_seeds:
+          - 7
+        top_n_models: 1
+        fallback_top_models:
+          - ridge
+      mlflow:
+        enabled: false
+    modeling:
+      output:
+        root_dir: reports/final_pipeline/smoke_components/overfitting
+      randomness:
+        default_seed: 7
+        repeated_seeds:
+          - 7
+      validation:
+        n_splits: 3
+        repeated_kfold:
+          enabled: true
+          n_repeats_per_seed: 1
+        nested_cv:
+          enabled: false
+        bootstrap:
+          enabled: false
+      mlflow:
+        enabled: false
+    optimization:
+      output:
+        root_dir: reports/final_pipeline/smoke_components/optimization
+      stage1_random_search:
+        n_trials_per_model: 1
+        cv_splits: 3
+        repeated_seeds:
+          - 7
+      stage2_selection:
+        top_n_models: 1
+      stage3_optuna:
+        enabled: false
+        n_trials_per_model: 1
+        timeout_seconds: null
+      mlflow:
+        enabled: false
+    uncertainty:
+      output:
+        root_dir: reports/final_pipeline/smoke_components/uncertainty
+      models:
+        default_model_keys:
+          - ridge
+      gpr:
+        cv_splits: 3
+        repeated_seeds:
+          - 7
+      bootstrap:
+        n_iterations: 12
+        min_predictions_per_sample: 1
+      mlflow:
+        enabled: false
+    xai:
+      output:
+        root_dir: reports/final_pipeline/smoke_components/xai
+      shap:
+        enabled: false
+      permutation_importance:
+        n_repeats: 3
+      lime:
+        enabled: false
+      mlflow:
+        enabled: false
+    statistical_comparison:
+      output:
+        root_dir: reports/final_pipeline/smoke_components/statistical_comparison
+      inputs:
+        auto_discover: true
+        discretization_variant_pattern: reports/final_pipeline/smoke_components/discretization/comparisons/*/*/tables/variant_scores.csv
+        overfitting_fold_pattern: reports/final_pipeline/smoke_components/overfitting/*/*/tables/fold_scores.csv
+      mlflow:
+        enabled: false
+
+  mlflow:
+    enabled: false
+    experiment_name: friction-surrogate-xai-final-pipeline-smoke
+    artifact_path_prefix: final_pipeline_smoke
+    tags:
+      stage: final_pipeline_smoke
+      policy: smoke_test
