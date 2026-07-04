@@ -18,7 +18,7 @@ final_pipeline:
       - wear rate
       - Ultimate Compression Strength (MPa)
       - Elongation (%)
-      - Temperature (Â°C)
+      - Temperature (°C)
       - Strain
     model_keys: all
     xai_fallback_models:
