@@ -342,11 +342,7 @@ Fast smoke run for checking the full orchestration wiring on one dataset, one ta
 python -m friction_surrogate_xai.pipelines --config configs/final_pipeline_smoke.yaml --no-mlflow
 ```
 
-On machines where a user-site Python package conflicts with the active conda environment, disable user-site packages before running:
-
-```powershell
-$env:PYTHONNOUSERSITE = "1"
-```
+Use the dedicated `friction-xai` environment for local runs. The conda `base` environment on this machine is not recommended because it can mix NumPy 2.x with older compiled packages.
 
 The final pipeline coordinates:
 
@@ -369,11 +365,16 @@ Recommended setup:
 
 ```bash
 conda env create -f environment.yml
-conda activate friction-surrogate-xai
-python -m pip install -e .
+conda activate friction-xai
+python -m pip install -e . --no-deps
 ```
 
-For local verification in the current workspace, the existing conda `base` environment was used because it already includes several required packages.
+For an already-created local environment, activate it first:
+
+```powershell
+conda activate friction-xai
+python -m pip install -e . --no-deps
+```
 
 ## Verification
 

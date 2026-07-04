@@ -1,11 +1,11 @@
-name: friction-surrogate-xai
+name: friction-xai
 channels:
   - conda-forge
   - defaults
 dependencies:
   - python=3.11
   - pip
-  - numpy
+  - numpy>=2.0,<3.0
   - pandas
   - scikit-learn
   - scipy
