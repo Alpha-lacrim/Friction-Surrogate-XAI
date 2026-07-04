@@ -83,7 +83,6 @@ models/*.onnx
 # Keep canonical raw assets under data/raw only.
 /Dataset *.xlsx
 /Mini project 1405.v2.pdf
-data/raw/*.xlsx
 data/raw/*.pdf
 
 # OS and editor noise

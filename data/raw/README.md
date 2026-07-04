@@ -1,11 +1,9 @@
 # Raw Data
 
-Place the local assignment PDF and Excel datasets in this directory:
+This directory stores the canonical raw assignment datasets:
 
-- `Mini project 1405.v2.pdf`
 - `Dataset 0136.xlsx`
 - `Dataset 0172.xlsx`
 - `Dataset 3772.xlsx`
 
-These raw files are intentionally ignored by Git. The data layer and EDA tests that require them are skipped when they are not present.
-
+The Excel datasets are tracked in Git for reproducible university work. The assignment PDF, `Mini project 1405.v2.pdf`, remains local-only and ignored by Git.

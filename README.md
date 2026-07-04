@@ -43,7 +43,7 @@ tests/                    Skeleton tests
 
 ## Data
 
-Raw assignment files are expected locally in `data/raw/`, but they are ignored by Git. Keep the filenames below when placing the files in a fresh clone.
+The three canonical raw Excel datasets are versioned under `data/raw/` for reproducibility. The assignment PDF remains local-only and ignored by Git.
 
 | Dataset | Rows | Columns | Notes |
 | --- | ---: | ---: | --- |

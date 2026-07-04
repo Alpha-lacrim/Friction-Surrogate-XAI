@@ -1,3 +1,3 @@
 # Data
 
-Local raw assignment files should be placed in `data/raw/`, but Excel/PDF raw files are intentionally ignored by Git. Generated intermediate and processed files should go into `data/interim/` and `data/processed/`.
+Canonical raw Excel datasets live in `data/raw/` and are tracked for reproducibility. The assignment PDF remains local-only and ignored by Git. Generated intermediate and processed files should go into `data/interim/` and `data/processed/`.
