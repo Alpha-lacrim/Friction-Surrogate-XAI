@@ -385,6 +385,33 @@ Generated run artifacts are intentionally ignored by Git. Re-run the final pipel
 
 For tiny datasets, Gaussian Process Regression may emit `ConvergenceWarning` messages when the fitted noise level reaches a configured kernel bound. These warnings are expected during production runs and do not indicate a failed stage.
 
+### Production Evaluation Snapshot
+
+The README keeps only headline evaluation evidence. Full per-target metrics, plots, and statistical tables are generated artifacts and should be inspected under `reports/` after each run.
+
+Current `latest` run highlights:
+
+- Stage 2 optimization selected the same Top 3 model families across all 20 optimization jobs: `gaussian_process_regression`, `extra_trees`, and `elasticnet`.
+- Overfitting audits generated 1,628 model/target/metric risk records with training score, validation score, generalization gap, fold variance, `risk_level`, and `likely_overfitting` flags.
+- Uncertainty evaluation generated 34 interval-calibration rows: GPR predictive intervals and bootstrap out-of-bag intervals for 17 dataset-target runs.
+- Statistical comparison produced 2,813 significant pairwise findings from Wilcoxon signed-rank and Nemenyi post-hoc outputs.
+
+Representative `dataset_0172` / `wear rate` result from the current run:
+
+| Evaluation | Result |
+| --- | --- |
+| Optimization Top 3 | GPR validation R2 `0.974`, ElasticNet validation R2 `0.961`, Extra Trees validation R2 `0.897` |
+| Overfitting audit | GPR and ElasticNet were low-risk; Extra Trees was flagged medium-risk because validation variance crossed the configured threshold |
+| Uncertainty | At the 95% interval level, GPR coverage was `0.847` and Ridge bootstrap coverage was `0.417`; both under-covered and should be interpreted cautiously |
+
+Key detailed tables:
+
+- `reports/evaluation/overfitting/<dataset>/<target>/tables/overfitting_summary.csv`
+- `reports/optimization/<dataset>/<target>/tables/stage2_top_models.csv`
+- `reports/optimization/<dataset>/<target>/tables/best_parameters.csv`
+- `reports/uncertainty/<dataset>/<target>/tables/comparison_report.csv`
+- `reports/statistical_comparison/tables/significant_findings.csv`
+
 ## Environment
 
 Recommended setup:
