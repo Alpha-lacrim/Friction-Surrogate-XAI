@@ -439,7 +439,3 @@ python -m friction_surrogate_xai
 ```
 
 These checks validate the skeleton, configs, importability, data layer, EDA module, preprocessing pipelines, evaluation framework, overfitting audit layer, staged hyperparameter optimization, discrete-input comparison workflow, explainability framework, uncertainty estimation, statistical comparison, and final orchestration pipeline. Tests that need raw Excel/PDF files are skipped when local raw files are absent.
-
-## Future Work
-
-Future work should generate the exhaustive experiment matrix for every dataset, target, original/discrete variant, and single/multi-output setting, then polish the final mechanical-engineering narrative from those completed artifacts. Keep model validation wired so preprocessing is cloned and fit inside each CV fold before any model sees validation data.
