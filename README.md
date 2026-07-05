@@ -359,6 +359,32 @@ The final pipeline coordinates:
 
 The pipeline writes persistent state after every stage under `reports/final_pipeline/<run_id>/state/pipeline_state.json`. With `resume: true`, completed stages are skipped on the next run, and with `continue_on_error: true`, later stages can still run after a failure so earlier experiments and artifacts are preserved. Final reports are written under `reports/final_pipeline/<run_id>/markdown/`.
 
+### Latest Production Run
+
+A full production run using `configs/final_pipeline.yaml` was completed locally with the default `run_id: latest`. All configured stages finished successfully:
+
+- loaded and validated all 3 datasets
+- generated preprocessing and EDA artifacts for all 3 datasets
+- generated 3 discretized datasets and 17 original-vs-discrete comparisons
+- ran 20 training/evaluation audit jobs
+- ran 20 staged optimization jobs
+- generated 17 uncertainty reports
+- generated 51 XAI model-target reports
+- generated statistical comparisons from 10,685 normalized score rows
+- wrote the final project report
+
+Inspect the latest production artifacts at:
+
+- `reports/final_pipeline/latest/markdown/final_project_report.md`
+- `reports/final_pipeline/latest/tables/pipeline_stage_status.csv`
+- `reports/final_pipeline/latest/state/pipeline_state.json`
+
+Component outputs are written under `reports/eda/`, `reports/preprocessing_artifacts/`, `reports/discretization/`, `reports/evaluation/overfitting/`, `reports/optimization/`, `reports/uncertainty/`, `reports/xai/`, and `reports/statistical_comparison/`. MLflow runs are written under `mlruns/` when MLflow logging is enabled.
+
+Generated run artifacts are intentionally ignored by Git. Re-run the final pipeline locally to regenerate them. Because `resume: true` is enabled in the production config, running the same command again with `run_id: latest` will reuse completed stages unless `force_rerun: true` is set or the run id is changed.
+
+For tiny datasets, Gaussian Process Regression may emit `ConvergenceWarning` messages when the fitted noise level reaches a configured kernel bound. These warnings are expected during production runs and do not indicate a failed stage.
+
 ## Environment
 
 Recommended setup:
